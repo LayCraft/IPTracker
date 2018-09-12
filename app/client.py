@@ -43,7 +43,8 @@ def getMachineInfo():
 	for network_interface in unvalidated:
 		if '' in network_interface:
 			continue
-		
+		if '127.0.0.1' in network_interface:
+			continue
 		else:
 			validated.append(network_interface)
 
