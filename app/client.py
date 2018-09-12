@@ -2,15 +2,19 @@
 import urllib.request
 import json
 
-SERVER = "http://localhost"
+SERVER = "localhost"
 PORT = 1337
 
 def setInfo(mac, ip, name, location):
-	# location = SERVER + ':' + str(PORT) + '/set/' + mac + '/' + ip + '/' + name + '/' + location
-	location = "%s:%i/set/%s/%s/%s/%s" % (SERVER, PORT, mac, ip, name, location)
+	url = "http://%s:%i/set/%s/%s/%s/%s" % (SERVER, PORT, mac, ip, name, location)
 	# read from the url to submit the data and decode its contents because the contents is a list of all devices.
-	return urllib.request.urlopen(location).read().decode()
+	return urllib.request.urlopen(url).read().decode()
+
+def getInfo():
+	url = "http://%s:%i/get" % (SERVER, PORT)
+	return urllib.request.urlopen(url).read().decode()
 
 
 def startClient():
 	print(setInfo("foo", "bar", "baz", "qux"))
+	print(getInfo())
