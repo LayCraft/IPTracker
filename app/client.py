@@ -2,7 +2,6 @@
 import urllib.request
 import platform
 import os
-import sys
 import netifaces
 
 SERVER = "localhost"
@@ -38,28 +37,29 @@ def removeInfo(mac):
 
 def getMachineInfo():
 	# determine OS
-	info = getNtInfo()
+	unvalidated = getInfo()
+	validated = []
+	# check each card for valid info and if they are valid add them to the validated list
+	for network_interface in unvalidated:
+		if '' in network_interface:
+			continue
+		
+		else:
+			validated.append(network_interface)
+
 	# print(os.name) # should always return "nt" or "posix"
-	# print(netifaces.interfaces())
-	# print(netifaces.ifaddresses('{6B1D5DE4-5CA4-49E3-BFFE-8F2D390E9E0E}'))
-	# query the machine the right way
-	# return platform.system()
-	return info
+	return validated
 
-def getNtInfo():
-
-
+def getInfo():
 	# it is named like this because the os name is nt if it is running a version of windows.
-	interfaces = netifaces.interfaces()
-	#print(interfaces) # make an ugly array of interface IDs ['{6B1D5DE4-5CA4-49E3-BFFE-8F2D390E9E0E}', '{9739C6A0-FFFC-4300-866C-499268613232}', '{199049E3-808B-40FE-811B-524006C5DB71}', '{EA7B8442-B8CB-40F9-8503-BE17E1934E6B}', '{F1D5BADB-4A4B-11E8-AF18-806E6F6E6963}']
-	for interface in interfaces:
+	for interface in netifaces.interfaces():
 		# make a list of 4 emptystring elements
 		collector = ['']*4
 
-		# copy the mac address into the first slot
+		# copy the MAC address into the first slot
 		collector[0] = netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr']
 		# print(netifaces.ifaddresses(interface))
-			# If the mac address is blank then move on. MAC is a primary key so is mandatory
+		# If the MAC address is blank then move on. MAC is a primary key so is mandatory
 		if collector[0] == '':
 			continue
 		
@@ -71,13 +71,6 @@ def getNtInfo():
 		if 2 in netifaces.ifaddresses(interface) and netifaces.ifaddresses(interface)[2][0]['addr'] != '':
 			collector[1] = netifaces.ifaddresses(interface)[2][0]['addr']
 		
-		'''
-		# Three ways to get your computer name. Saving for linux use later. All work in nt.
-		platform.node()
-		socket.gethostname()
-		os.environ['COMPUTERNAME']
-		'''
-
 		# save the machine name
 		collector[2] = platform.node()
 		collector[3] = location
