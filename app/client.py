@@ -1,5 +1,8 @@
 # this client checks to see if the current system information is up to date or if there has been a change to the network. If there is a change it will request a fresh copy of the list and submit a change if the machine's information is out-of-date.
 import urllib.request
+import platform
+import os
+import sys
 
 SERVER = "localhost"
 PORT = 1337
@@ -24,13 +27,23 @@ def removeInfo(mac):
 	url = "%s/remove/%s" % (BASE_URL, mac)
 	return urllib.request.urlopen(url).read().decode()
 
+def getMachineInfo():
+	# determine OS
+	print(os.name) # should always return "nt" or "posix"
+
+	# query the machine the right way
+	# return platform.system()
+	return None
+
+
 def startClient():
-	print(setInfo("foo", "bar", "baz", "qux"))
-	print(getMasterList())
-	print(getTime())
-	print(setInfo("foo", "bar", "baz", "qux"))
-	print(getTime())
-	print(removeInfo("foo"))
-	print(getTime())
-	print(getTime())
-	print(getMasterList())
+	# print(setInfo("foo", "bar", "baz", "qux"))
+	# print(getMasterList())
+	# print(getTime())
+	# print(setInfo("foo", "bar", "baz", "qux"))
+	# print(getTime())
+	# print(removeInfo("foo"))
+	# print(getTime())
+	# print(getTime())
+	# print(getMasterList())
+	print(getMachineInfo())
