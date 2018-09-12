@@ -1,4 +1,5 @@
-# this is supposed to be a class that accesses and sets the current information about the IPs
+# this is supposed to be a class that accesses and sets the current information about the IPs it only runs in RAM and doesn't keep records.
+
 from typing import Dict
 
 class StorageHandler:
@@ -28,7 +29,4 @@ class StorageHandler:
 		return self.collection
 
 if __name__ == "__main__":
-	tester = StorageHandler()
-	print(tester.getMasterList())
-	
-	tester.setDevice()
+	# I should put in some tests here
