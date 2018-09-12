@@ -12,7 +12,7 @@ def setInfo(mac, ip, name, location):
 	# read from the url to submit the data and decode its contents because the contents is a list of all devices.
 	return urllib.request.urlopen(url).read().decode()
 
-def getInfo():
+def getMasterList():
 	url = "%s/get" % (BASE_URL)
 	return urllib.request.urlopen(url).read().decode()
 
@@ -20,9 +20,17 @@ def getTime():
 	url = "%s/time" % (BASE_URL)
 	return urllib.request.urlopen(url).read().decode()
 
-
+def removeInfo(mac):
+	url = "%s/remove/%s" % (BASE_URL, mac)
+	return urllib.request.urlopen(url).read().decode()
 
 def startClient():
 	print(setInfo("foo", "bar", "baz", "qux"))
-	print(getInfo())
+	print(getMasterList())
 	print(getTime())
+	print(setInfo("foo", "bar", "baz", "qux"))
+	print(getTime())
+	print(removeInfo("foo"))
+	print(getTime())
+	print(getTime())
+	print(getMasterList())
