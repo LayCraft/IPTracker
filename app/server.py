@@ -1,13 +1,12 @@
-from bottle import route, run, template
-import json
+from bottle import route, run, error, static_file
 from storage_handler import StorageHandler
 
 storage = StorageHandler()
 def startServer():
-	
-	@route('/')
-	def displayApi():
-		return "API listing here"
+
+	@error(404)
+	def error404(error):
+		return static_file('api.html', root='app/static')
 
 	@route('/list')
 	def getMasterList():
@@ -30,4 +29,4 @@ def startServer():
 		storage.setDevice(mac, ip, name, location)
 		return storage.setDevice(mac, ip, name, location)
 
-	run(host='localhost', port=8080)
+	run(reloader=True, host='localhost', port=8080)

@@ -3,14 +3,16 @@
 from typing import Dict
 
 class StorageHandler:
-	# Should be a collection of devices in a dictionary. The key for the devices is the dict
+	# Should be a collection of devices in a dictionary. The key for the devices is the mac address
+	# The mac address is used because theoretically a machine could use two IP addresses if it has two network cards
+
 	collection: dict = {}
 
 	def __init__(self):
-		print("RAM storage initialized")
+		print("RAM storage initialized. Neat")
 
 	def removeDevice(self, mac:str):
-		# remove the mac address from the dictionary
+		# remove the device at the mac address from the dictionary
 		print("Device deleted from master collection")
 		del self.collection[mac]
 		return self.collection
