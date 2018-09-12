@@ -3,10 +3,13 @@ from storage_handler import StorageHandler
 
 storage = StorageHandler()
 def startServer():
-
 	@error(404)
 	def error404(error):
 		return static_file('api.html', root='app/static')
+
+	@route('/time')
+	def getUpdateTime():
+		return storage.getUpdateTime()
 
 	@route('/list')
 	def getMasterList():
@@ -15,10 +18,6 @@ def startServer():
 	@route('/get/<mac>')
 	def getDevice(mac):
 		return storage.getDevice(mac)
-	
-	@route('/remove/<mac>')
-	def removeDevice(mac):
-		return storage.removeDevice(mac)
 	
 	@route('/reset')
 	def resetSystem(mac):
@@ -29,4 +28,4 @@ def startServer():
 		storage.setDevice(mac, ip, name, location)
 		return storage.setDevice(mac, ip, name, location)
 
-	run(reloader=True, host='localhost', port=8080)
+	run(reloader=True, host='localhost', port=1337)

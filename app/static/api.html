@@ -1,1 +1,55 @@
-<b>Woohoo</b>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>IPTracker</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style type="text/css">
+		body{ font-family: Sans-Serif; }
+		.wrap { width: 50%; margin: 0px auto;}
+		code { background-color: #c0c0c0;}
+		hr { overflow: visible; /* For IE */ padding: 0; border: none; border-top: medium double #333; color: #333; text-align: center; } 
+		hr:after { content: "S"; display: inline-block; position: relative; top: -0.7em; font-size: 1em; padding: 0 0.25em; background: white; }
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<h1>IPTracker: 404 / API</h1>
+		<p>
+			This is a simple information tracker. It doesn't store anything in a database and because it a feather light microservice, instead it runs in RAM as storage and expects the clients to update the information located here. The MAC addresses are unique parts of a machine so they act as a key for pulling information about the network card and the machine that it is attached to. There can be only one entry for a MAC address so they will never be duplicated.
+		</p>
+		<p>
+			The service doesn't do checking. So if you wanted to you can dump nearly anything into the URL. For example, there is no standard way of putting in a mac address. You could include semicolons or not. Spaces and special characters are URL encoded so they can be included. This system doesn't care about whether or not you send it an IPv4 or IPv6. Machine names and locations are not defined or tracked in this service. This is basically the data equivalent of a sticky note board for looking to see what systems are located where in a dynamic network.
+		</p>
+		<p>
+			<code>http://wvca41814:1337/set/foo/bar/baz/qux</code> 
+			<br>
+			<strong>✔️ Perfectly valid in this system despite looking like an example.</strong>
+			<br>
+			<code>http://wvca41814:1337/set/b8:27:eb:8a:fc:e2/10.168.73.113/WTCALVSE061000L/The Basement</code>
+			<br>
+			<strong>✔️ Perfectly valid even with a space character.</strong>
+		</p>
+		<p>This route returns a time string so that you can check for updates from a client which is a less system demanding thing than parsing the json and looking for changes in the client.</p>
+		<code>/time</code>
+		<hr>
+
+		<p>This route returns a JSON object with all of the devices</p>
+		<code>/list</code>
+		<hr>
+
+		<p>This route accepts a mac address to remove and returns a JSON object with all of the devices. (Minus the one removed) </p>
+		<code>/remove/<strong>[mac address]</strong></code>
+		<hr>
+
+		<p>This route returns a blank JSON object after dumping the storage. It will eventually be rebuilt when the clients send their information again. Done manually. This is never done in the code.</p>
+		<code>/reset</code>
+		<hr>
+
+		<p>This route is for setting information about the host. The client part of this is responsible for keeping this information up-to-date. That means the client checks the list or the timestamp to determine if it is being tracked properly then it does a get at the right url when it realizes that the information associated with the MAC address is out of date.</p>
+		<code>/set/<strong>[mac address]</strong>/<strong>[ip address]</strong>/<strong>[machine name]</strong>>/<strong>[general location]</strong></code>
+		<code>/set/<strong>[mac address]</strong>/<strong>[ip address]</strong>/<strong>[machine name]</strong>>/<strong>[general location]</strong></code>
+	</div>
+</body>
+</html>
