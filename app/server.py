@@ -11,14 +11,10 @@ def startServer():
 	def getUpdateTime():
 		return storage.getUpdateTime()
 
-	@route('/list')
+	@route('/get')
 	def getMasterList():
 		return storage.getMasterList()
 
-	@route('/get/<mac>')
-	def getDevice(mac):
-		return storage.getDevice(mac)
-	
 	@route('/remove/<mac>')
 	def removeDevice(mac):
 		return storage.removeDevice(mac)
