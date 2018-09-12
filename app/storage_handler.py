@@ -14,11 +14,12 @@ class StorageHandler:
 		print("RAM storage initialized. Neat")
 
 	def removeDevice(self, mac:str):
-		# remove the device at the mac address from the dictionary
-		print("Device deleted from master collection")
-		del self.collection[mac]
-		# record the time that the data is changed
-		self.update_time = datetime.now()
+		if mac in self.collection:
+			# remove the device at the mac address from the dictionary
+			del self.collection[mac]
+			# record the time that the data is changed
+			self.update_time = datetime.now()
+		# then return the collection
 		return self.collection
 	
 	def setDevice(self, mac:str, ip:str, name:str, location:str):

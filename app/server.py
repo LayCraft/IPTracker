@@ -19,6 +19,10 @@ def startServer():
 	def getDevice(mac):
 		return storage.getDevice(mac)
 	
+	@route('/remove/<mac>')
+	def removeDevice(mac):
+		return storage.removeDevice(mac)
+	
 	@route('/reset')
 	def resetSystem(mac):
 		return storage.reset()
