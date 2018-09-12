@@ -7,12 +7,13 @@ class StorageHandler:
 	collection: dict = {}
 
 	def __init__(self):
-		print("Storage handler successfully created.")
+		print("RAM storage initialized")
 
 	def removeDevice(self, mac:str):
 		# remove the mac address from the dictionary
 		print("Device deleted from master collection")
 		del self.collection[mac]
+		return self.collection
 	
 	def getDevice(self, mac:str):
 		return self.collection[mac]
@@ -24,9 +25,11 @@ class StorageHandler:
 		device["name"] = name
 		device["location"] = location
 		self.collection[device["MAC"]] = device
+		return self.collection
 	
 	def getMasterList(self):
 		return self.collection
 
-if __name__ == "__main__":
-	# I should put in some tests here
+	def reset(self):
+		self.collection = {}
+		return self.collection
