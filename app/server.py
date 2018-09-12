@@ -28,4 +28,4 @@ def startServer():
 		storage.setDevice(mac, ip, name, location)
 		return storage.setDevice(mac, ip, name, location)
 
-	run(reloader=True, host='localhost', port=1337)
+	run(host='localhost', port=1337)
