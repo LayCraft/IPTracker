@@ -10,6 +10,7 @@ class Device:
 	
 
 	def __init__(self, mac:str, ip:str, name:str, location:str):
+		print("Device created!")
 		self.ip = ip
 		self.mac = mac
 		self.name = name

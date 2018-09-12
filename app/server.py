@@ -1,15 +1,15 @@
 from bottle import route, run, template
 import json
-import storage_handler
-from '../classes/device' import Device
+from storage_handler import StorageHandler
 
 # @route('/<name>')
 # def index(name):
 # 	return template('<b>Hello {{name}}</b>', name=name)
+storage = StorageHandler()
+def startServer():
+	@route('/')
+	def masterList():
+		
+		return "root"
 
-@route('/')
-def masterList():
-	test = Device()
-	return "root"
-
-run(host='localhost', port=8080)
+	run(host='localhost', port=8080)

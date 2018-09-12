@@ -5,6 +5,8 @@ class StorageHandler:
 	# Should be a collection of devices in a dictionary. The key for the devices is the dict
 	collection: dict = {}
 
+	def __init__(self):
+		print("Storage handler successfully created.")
 	def removeDevice(self, mac:str):
 		# remove the mac address from the dictionary
 		print("Device deleted from master collection")
@@ -21,4 +23,6 @@ class StorageHandler:
 
 if __name__ == "__main__":
 	tester = StorageHandler()
-	print(tester.getMasterList)
+	print(tester.getMasterList())
+	
+	tester.setDevice()
