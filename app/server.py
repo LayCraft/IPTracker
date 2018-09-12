@@ -9,7 +9,10 @@ storage = StorageHandler()
 def startServer():
 	@route('/')
 	def masterList():
-		
-		return "root"
+		return storage.getMasterList()
+
+	@route('/<mac>/<ip>/<name>/<location>')
+	def addDevice(mac, ip, name, location):
+		storage.setDevice(mac, ip, name, location)
 
 	run(host='localhost', port=8080)

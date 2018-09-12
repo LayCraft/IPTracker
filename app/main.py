@@ -1,6 +1,5 @@
 # this is a main entry to decide whether you are running the script's client or if you are running it as a server.
 import sys
-from device import Device
 from storage_handler import StorageHandler
 
 # import the two different routes through the program

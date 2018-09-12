@@ -7,18 +7,24 @@ class StorageHandler:
 
 	def __init__(self):
 		print("Storage handler successfully created.")
+
 	def removeDevice(self, mac:str):
 		# remove the mac address from the dictionary
 		print("Device deleted from master collection")
-		del self.collection['MAC']
+		del self.collection[mac]
 	
 	def getDevice(self, mac:str):
-		return self.collection['MAC']
+		return self.collection[mac]
 	
-	def setDevice(self, device):
-		device["MAC"] = device
+	def setDevice(self, mac:str, ip:str, name:str, location:str):
+		device = {}
+		device["MAC"] = mac
+		device["IP"] = ip
+		device["name"] = name
+		device["location"] = location
+		self.collection[device["MAC"]] = device
 	
-	def getMasterList(self) -> Dict:
+	def getMasterList(self):
 		return self.collection
 
 if __name__ == "__main__":
