@@ -9,10 +9,15 @@ SERVER = "localhost"
 PORT = 1337
 
 # this collection of tuples is a place to put results
-identifiers: list = []
+identifiers = []
 
 # Build once and use many times. Reduces string concat later.
 BASE_URL = "http://%s:%i" % (SERVER, PORT)
+
+# get the machine's location for use from the static file this stays constant until the script is restarted
+f = open('{0}{1}static{1}location.txt'.format(os.path.dirname(os.path.realpath(__file__)), os.path.sep), 'r')
+location = f.readline()
+f.close()
 
 def setInfo(mac, ip, name, location):
 	url = "%s/set/%s/%s/%s/%s" % (BASE_URL, mac, ip, name, location)
@@ -42,10 +47,7 @@ def getMachineInfo():
 	return info
 
 def getNtInfo():
-	# get the machine's location from the static file
-	f = open('{0}{1}static{1}location.txt'.format(os.path.dirname(os.path.realpath(__file__)), os.path.sep), 'r')
-	location = f.readline()
-	f.close()
+
 
 	# it is named like this because the os name is nt if it is running a version of windows.
 	interfaces = netifaces.interfaces()
@@ -98,3 +100,4 @@ def startClient():
 	# print(getTime())
 	# print(getMasterList())
 	print(getMachineInfo())
+	return None
