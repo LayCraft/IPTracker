@@ -1,5 +1,5 @@
 # this client checks to see if the current system information is up to date or if there has been a change to the network. If there is a change it will request a fresh copy of the list and submit a change if the machine's information is out-of-date.
-import urllib.request
+import urllib.request,urllib.parse
 import platform
 import os
 import netifaces
@@ -16,7 +16,6 @@ BASE_URL = "http://%s:%i" % (SERVER, PORT)
 f = open('{0}{1}static{1}location.txt'.format(os.path.dirname(os.path.realpath(__file__)), os.path.sep), 'r')
 LOCATION = f.readline()
 f.close()
-
 
 def getMasterList():
 	url = "%s/get" % (BASE_URL)
