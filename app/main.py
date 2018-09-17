@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # this is a main script to decide whether you are running the script's client or if you are running it as a server.
 import sys
 

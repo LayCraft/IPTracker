@@ -3,12 +3,10 @@ import urllib.request
 import platform
 import os
 import netifaces
+from time import sleep
 
 SERVER = "localhost"
 PORT = 1337
-
-# this collection of tuples is a place to put results
-identifiers = []
 
 # Build once and use many times. Reduces string concat later.
 BASE_URL = "http://%s:%i" % (SERVER, PORT)
@@ -21,6 +19,7 @@ f.close()
 def setInfo(mac, ip, name, location):
 	url = "%s/set/%s/%s/%s/%s" % (BASE_URL, mac, ip, name, location)
 	# read from the url to submit the data and decode its contents because the contents is a list of all devices.
+	print("Setting info on server")
 	return urllib.request.urlopen(url).read().decode()
 
 def getMasterList():
@@ -29,29 +28,41 @@ def getMasterList():
 
 def getTime():
 	url = "%s/time" % (BASE_URL)
+	print("Getting server time")
 	return urllib.request.urlopen(url).read().decode()
 
 def removeInfo(mac):
 	url = "%s/remove/%s" % (BASE_URL, mac)
+	print("Removing information")
 	return urllib.request.urlopen(url).read().decode()
 
 def getMachineInfo():
+	print("Collecting machine info.")
 	# determine OS
 	unvalidated = getInfo()
-	validated = []
+	validated = {}
 	# check each card for valid info and if they are valid add them to the validated list
 	for network_interface in unvalidated:
 		if '' in network_interface:
+			# missing information
 			continue
-		if '127.0.0.1' in network_interface:
+		elif '127.0.0.1' in network_interface:
+			# localhost for ipv4
+			continue
+		elif '::1' == network_interface[1]:
+			# localhost for ipv6
+			continue
+		elif '00:00:00:00:00:00' == network_interface[0]:
+			# blank MAC address
 			continue
 		else:
-			validated.append(network_interface)
+			validated[network_interface[0]] = network_interface 
 
 	# print(os.name) # should always return "nt" or "posix"
 	return validated
 
 def getInfo():
+	identifiers = {}
 	# it is named like this because the os name is nt if it is running a version of windows.
 	for interface in netifaces.interfaces():
 		# make a list of 4 emptystring elements
@@ -77,21 +88,44 @@ def getInfo():
 		collector[3] = location
 
 		# save the collector into it
-		identifiers.append(collector)
+		identifiers[collector[0]] = collector
 		# print(collector)
 	return identifiers
 
 
 
 def startClient():
-	# print(setInfo("foo", "bar", "baz", "qux"))
-	# print(getMasterList())
-	# print(getTime())
-	# print(setInfo("foo", "bar", "baz", "qux"))
-	# print(getTime())
-	# print(removeInfo("foo"))
-	# print(getTime())
-	# print(getTime())
-	# print(getMasterList())
-	print(getMachineInfo())
-	return None
+
+	# Intial data load
+	updateTime = getTime()
+	masterList = getMasterList()
+	machineInfo = getMachineInfo()
+
+
+
+
+	# every minute check the hardware and the timestamp
+	while True:
+		# collect the machine info again and respond to changes
+		machineInfoTemp = getMachineInfo()
+		if machineInfo != machineInfoTemp:
+			machineInfo = machineInfoTemp
+			# resubmit all of the machine info
+			for m in machineInfo:
+				setInfo(m[0], m[1], m[2], m[3])
+
+		# if the timestamp is not equal to the old timestamp 
+		if updateTime != getTime():
+			# get the server's masterlist
+			masterList = getMasterList()
+			
+			# check master list to be sure that client info is up to date.
+			for m in machineInfo:
+				# the info contained at the dictionary key for the MAC should be identical to the info that we have.
+				if masterlist[m[0]] != m:
+					setInfo(m[0], m[1], m[2], m[3])
+
+			# save the timestamp of the master list as the new timestamp
+			updateTime = getTime()
+		# sleep and check again later
+		# sleep(60)
