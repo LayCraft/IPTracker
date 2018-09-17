@@ -5,7 +5,7 @@ storage = StorageHandler()
 def startServer():
 	@error(404)
 	def error404(error):
-		return static_file('api.html', root='app/static')
+		return static_file('api.html', root='app/server/static')
 
 	@route('/time')
 	def getUpdateTime():
