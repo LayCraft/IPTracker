@@ -11,6 +11,8 @@ In the manufacturing area there are many devices and all of the networking infra
 
 ## Installation
 
+This is a service so we need to install the appropriate version of pywin32 for the system's bittedness (64 or 32). installers in the support folder. [Releases Here](https://github.com/mhammond/pywin32/releases)
+
 Create a virtual environment to install the dependencies
 `python -m venv env`
 
@@ -23,8 +25,7 @@ pip install from the requirements.txt into the env.
 
 When pip installing dependencies be sure to add them to requirements.txt afterward using  `pip freeze > requirements.txt`. (assuming you are trying to contribute to this repo.)
 
-You secretly run this without having a cmd window open in windows.
- 
+<!-- You secretly run this without having a cmd window open in windows.
  1. Make a shortcut to client.vbs
  2. Put the shortcut into the startup folder so that it will be loaded when Windows starts.
-	`C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup`
+	`C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup` -->

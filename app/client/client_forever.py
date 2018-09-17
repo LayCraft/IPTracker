@@ -5,5 +5,5 @@ This script launches the server and prevents it from shutting down even after an
 '''
 
 while True:
-	p = Popen("python app/main.py server", shell=True)
+	p = Popen("python app/client/client.py", shell=True)
 	p.wait()
