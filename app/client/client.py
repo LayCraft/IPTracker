@@ -5,7 +5,9 @@ import os
 import netifaces
 from time import sleep
 
-SERVER = "localhost"
+SERVER = "wvca41814"
+# SERVER = "wvca41814"# for local development
+
 PORT = 1337
 # Build once and use many times. Reduces string concat later.
 BASE_URL = "http://%s:%i" % (SERVER, PORT)
