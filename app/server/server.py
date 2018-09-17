@@ -28,7 +28,7 @@ def startServer():
 		storage.setDevice(mac, ip, name, location)
 		return storage.setDevice(mac, ip, name, location)
 
-	run(host='localhost', port=1337)
+	run(host='wvca41814', port=1337)
 
 if __name__ == "__main__":
 	startServer()
