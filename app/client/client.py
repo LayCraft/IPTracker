@@ -4,7 +4,7 @@ import platform
 import os
 import netifaces
 from time import sleep
-import re
+import json
 
 SERVER = "wvca41814"
 # SERVER = "wvca41814"# for local development
@@ -20,7 +20,7 @@ f.close()
 
 def getMasterList():
 	url = "%s/get" % (BASE_URL)
-	return urllib.request.urlopen(url).read().decode()
+	return json.loads(urllib.request.urlopen(url).read().decode())
 
 def getTime():
 	url = "%s/time" % (BASE_URL)
@@ -94,14 +94,21 @@ def removeInfo(mac):
 def startClient():
 	# Collect current machine info
 	machineInfo = getMachineInfo()
+	# get the master list. this should show last submitted time 
+	masterList = getMasterList()
+	updateTime = getTime()
+
+	print(machineInfo['54:e1:ad:b1:e5:bb'])
+	print(masterList)
+
+	# if machineInfo['54:e1:ad:b1:e5:bb'] == masterList['54:e1:ad:b1:e5:bb']:
+	# 	print("Woop!")
 
 	# # submit all valid network connections
 	# for network_card in machineInfo:
 	# 	setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
 	
-	# get the master list. this should show last submitted time 
-	masterList = getMasterList()
-	updateTime = getTime()
+
 
 	# # every minute check the hardware and the timestamp
 	# while True:
