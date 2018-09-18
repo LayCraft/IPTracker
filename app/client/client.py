@@ -26,11 +26,11 @@ def getMasterList():
 
 def getTime():
 	url = "%s/time" % (BASE_URL)
-	print("Getting server time")
+	# print("Getting server time")
 	return request.urlopen(url).read().decode()
 
 def getMachineInfo():
-	print("Collecting machine info.")
+	# print("Collecting machine info.")
 	# determine OS
 	unvalidated = {} # A place to put uncertain results
 	validated = {} # A place to put clean retunable results
@@ -86,12 +86,12 @@ def setInfo(mac, ip, name, location):
 	url = "%s/set/%s/%s/%s/%s" % (BASE_URL, quote(mac), quote(ip), quote(name), quote(location)) 
 	print(url)
 	# read from the url to submit the data and decode its contents because the contents is a list of all devices.
-	print("Setting info on server")
+	# print("Setting info on server")
 	return request.urlopen(url).read().decode()
 
 def removeInfo(mac):
 	url = "%s/remove/%s" % (BASE_URL, mac)
-	print("Removing information")
+	# print("Removing information")
 	return request.urlopen(url).read().decode()
 
 def submitMismatched(machineInfo, masterList):
@@ -108,7 +108,7 @@ def startClient():
 	machineInfo = getMachineInfo()
 	# be sure that all mismatched are resolved and get the update time
 	updateTime = submitMismatched(machineInfo, getMasterList())
-	
+	print('Polling')
 	# loop forever. This could have been threaded
 	while True:
 		sleep(POLL_TIME) # the info is fresh
