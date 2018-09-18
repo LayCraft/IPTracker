@@ -33,27 +33,25 @@ def getMachineInfo():
 	unvalidated = getInfo()
 	validated = {}
 	# check each card for valid info and if they are valid add them to the validated list
-	for network_interface in unvalidated:
-		if '' in unvalidated[network_interface]:
+	for network_card in unvalidated:
+		# check that the entry has all neccesary keys
+		if 'MAC' not in unvalidated[network_card].keys() or 'IP' not in unvalidated[network_card].keys() or 'name' not in unvalidated[network_card].keys() or 'location' not in unvalidated[network_card].keys():
 			# missing information
 			continue
-		elif '127.0.0.1' in unvalidated[network_interface]:
+		elif '127.0.0.1' in unvalidated[network_card]['IP']:
 			# localhost for ipv4
 			continue
-		elif '::1' == unvalidated[network_interface][1]:
+		elif '::1' == unvalidated[network_card]['IP']:
 			# localhost for ipv6
 			continue
-		elif '00:00:00:00:00:00' == unvalidated[network_interface][0]:
+		elif '00:00:00:00:00:00' == unvalidated[network_card]['MAC']:
 			# blank MAC address
 			continue
-		elif unvalidated[network_interface][1][:7] != '10.168.':
+		elif unvalidated[network_card]['IP'][:7] != '10.168.':
 			# ip is not in the company subnet as ipv4
 			continue
 		else:
-			validated[network_interface] = unvalidated[network_interface] 
-
-	# print(os.name) # should always return "nt" or "posix"
-	# print(validated)
+			validated[network_card] = unvalidated[network_card]
 	return validated
 
 def getInfo():
@@ -61,36 +59,28 @@ def getInfo():
 	identifiers = {}
 	# it is named like this because the os name is nt if it is running a version of windows.
 	for interface in netifaces.interfaces():
-		# make a list of 4 emptystring elements
 		collector = {}
-
-		# copy the MAC address into the first slot
-		collector['MAC'] = netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr']
-		# print(netifaces.ifaddresses(interface))
-		# If the MAC address is blank then move on. MAC is a primary key so is mandatory
-		if collector['MAC'] == '':
+		# Save the MAC address if it exists
+		if netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr'] != '':
+			collector['MAC'] = netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr']
+		# If the MAC address is blank then move on. MAC is a primary key so is mandatory. Don't continue with this one unless we have some place in the dict to save it
+		if 'MAC' not in collector.keys():
 			continue
 		
-		# # collect the IP addresses
+		# # collect the IPV6 address TODO: We don't support IPv6 yet
 		# if 23 in netifaces.ifaddresses(interface):
 		# 	# there is an ipv6 address so we copy the ipv6 first and let the next part overwrite the ipv6 if it exists.
 		# 	collector['IP'] = netifaces.ifaddresses(interface)[23][0]['addr']
-		
-		# if there is the ipv4 element and it isn't blank then we overwrite the ipv6 address
+		# Save the IPv4 if it exists
 		if 2 in netifaces.ifaddresses(interface) and netifaces.ifaddresses(interface)[2][0]['addr'] != '':
 			collector['IP'] = netifaces.ifaddresses(interface)[2][0]['addr']
-		
 		# save the machine name
 		collector['name'] = platform.node()
-
 		# Save location
 		collector['location'] = LOCATION
 
 		# save the collector into it
 		identifiers[collector['MAC']] = collector
-		
-		# print(collector)
-	# print(identifiers)
 	return identifiers
 
 def setInfo(mac, ip, name, location):
@@ -116,19 +106,19 @@ def startClient():
 	masterList = getMasterList()
 	updateTime = getTime()
 
-	# every minute check the hardware and the timestamp
-	while True:
-		# submit all valid network connections
-		for network_card in machineInfo:
-			print('the entry')
-			print(machineInfo[network_card])
-			print('the master list')
-			print(masterList)
+	# # every minute check the hardware and the timestamp
+	# while True:
+	# 	# submit all valid network connections
+	# 	for network_card in machineInfo:
+	# 		print('the entry')
+	# 		print(machineInfo[network_card])
+	# 		print('the master list')
+	# 		print(masterList)
 
-		#	setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
+	# 		setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
 		
-		# sleep and check again later
-		sleep(3)
+	# 	# sleep and check again later
+	# 	sleep(3)
 
 	# 	# collect the machine info again and respond to changes
 	# 	machineInfoTemp = getMachineInfo()
