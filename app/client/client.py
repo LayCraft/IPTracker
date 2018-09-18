@@ -12,11 +12,12 @@ SERVER = "wvca41814"
 PORT = 1337
 # Build once and use many times. Reduces string concat later.
 BASE_URL = "http://%s:%i" % (SERVER, PORT)
+# how long between polling
+POLL_TIME = 60
 
 # get the machine's location for use from the static file this stays constant until the script is restarted
 f = open('{0}{1}static{1}location.txt'.format(os.path.dirname(os.path.realpath(__file__)), os.path.sep), 'r')
 LOCATION = f.readline().strip() 
-print(LOCATION)
 f.close()
 
 def getMasterList():
@@ -93,61 +94,40 @@ def removeInfo(mac):
 	print("Removing information")
 	return request.urlopen(url).read().decode()
 
-def startClient():
-	# Collect current machine info
-	machineInfo = getMachineInfo()
-	# get the master list. this should show last submitted time 
-	masterList = getMasterList()
-	updateTime = getTime()
-
-	# print(machineInfo['54:e1:ad:b1:e5:bb'])
-	# print(masterList['54:e1:ad:b1:e5:bb'])
-
-	# if machineInfo['54:e1:ad:b1:e5:bb'] == masterList['54:e1:ad:b1:e5:bb']:
-	# 	print("Woop!")
-
-	# submit all valid network connections
+def submitMismatched(machineInfo, masterList):
+	# loop through the network cards 
 	for network_card in machineInfo:
-		setInfo(machineInfo[network_card]['MAC'], machineInfo[network_card]['IP'], machineInfo[network_card]['name'], machineInfo[network_card]['location'])
+		# and check for mismatches or missing keys
+		if network_card not in masterList.keys() or machineInfo[network_card] != masterList[network_card]:
+			setInfo(machineInfo[network_card]['MAC'], machineInfo[network_card]['IP'], machineInfo[network_card]['name'], machineInfo[network_card]['location'])
+			# if we removed a network card we may have an extra entry. In that case  it will be removed next time we request a reset to the server. No big deal.
+	return getTime()
+
+def startClient():
+	# a place for network card info
+	machineInfo = getMachineInfo()
+	# be sure that all mismatched are resolved and get the update time
+	updateTime = submitMismatched(machineInfo, getMasterList())
 	
+	# loop forever. This could have been threaded
+	while True:
+		sleep(POLL_TIME) # the info is fresh
+		'''----Machine Freshness Update----------------------------------------------'''
+		# examine the current machine info and if there is a change we quietly submit the changes to our network card and update the
+		machineInfoTemp = getMachineInfo()
+		if machineInfoTemp != machineInfo:
+			machineInfo = machineInfoTemp
+			updateTime = submitMismatched(machineInfo, getMasterList())
+			# the server is up to date with our stuff and we have a timestamp.
+			# it is possible that another machine has updated but a client doesn't care about other machines so we just assume all went well and everythign else will be fixed in the next loop if necessary
+			continue #we know the update time is fresh and that there is no discrepencies with the update time or the list. Return to snooze position
 
-
-	# # every minute check the hardware and the timestamp
-	# while True:
-	# 	# submit all valid network connections
-	# 	for network_card in machineInfo:
-	# 		print('the entry')
-	# 		print(machineInfo[network_card])
-	# 		print('the master list')
-	# 		print(masterList)
-
-	# 		setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
-		
-	# 	# sleep and check again later
-	# 	sleep(3)
-
-	# 	# collect the machine info again and respond to changes
-	# 	machineInfoTemp = getMachineInfo()
-	# 	if machineInfo != machineInfoTemp:
-	# 		machineInfo = machineInfoTemp
-	# 		# resubmit all of the machine info
-	# 		for m in machineInfo:
-	# 			setInfo(m[0], m[1], m[2], m[3])
-
-	# 	# if the timestamp is not equal to the old timestamp 
-	# 	if updateTime != getTime():
-	# 		# get the server's masterlist
-	# 		masterList = getMasterList()
-			
-	# 		# check master list to be sure that client info is up to date.
-	# 		for m in machineInfo:
-	# 			# the info contained at the dictionary key for the MAC should be identical to the info that we have.
-	# 			if masterlist[m[0]] != m:
-	# 				setInfo(m[0], m[1], m[2], m[3])
-
-	# 		# save the timestamp of the master list as the new timestamp
-	# 		updateTime = getTime()
-
+		'''----Server Freshness Update----------------------------------------------'''
+		# if the timestamp on the server data doesn't match then we need to pull the data, check for freshness, update if necessary, and replace the timestamp
+		if updateTime != getTime():
+			# check for updates and set the returned time
+			# we know the machine info is fresh because it has to be to get to the second part of the loop
+			updateTime = submitMismatched(machineInfo, getMasterList())
 
 if __name__ == "__main__":
 	startClient()
