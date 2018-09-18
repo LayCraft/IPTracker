@@ -47,14 +47,13 @@ def getMachineInfo():
 			# blank MAC address
 			continue
 		elif unvalidated[network_interface][1][:7] != '10.168.':
-			# not in the company subnet and must be ipv4
-			print('not in our subnet: '+unvalidated[network_interface][1])
+			# ip is not in the company subnet as ipv4
 			continue
 		else:
 			validated[network_interface] = unvalidated[network_interface] 
 
 	# print(os.name) # should always return "nt" or "posix"
-	print(validated)
+	# print(validated)
 	return validated
 
 def getInfo():
@@ -72,10 +71,11 @@ def getInfo():
 		if collector[0] == '':
 			continue
 		
-		# collect the IP addresses
-		if 23 in netifaces.ifaddresses(interface):
-			# there is an ipv6 address so we copy the ipv6 first and let the next part overwrite the ipv6 if it exists.
-			collector[1] = netifaces.ifaddresses(interface)[23][0]['addr']
+		# # collect the IP addresses
+		# if 23 in netifaces.ifaddresses(interface):
+		# 	# there is an ipv6 address so we copy the ipv6 first and let the next part overwrite the ipv6 if it exists.
+		# 	collector['IP'] = netifaces.ifaddresses(interface)[23][0]['addr']
+		
 		# if there is the ipv4 element and it isn't blank then we overwrite the ipv6 address
 		if 2 in netifaces.ifaddresses(interface) and netifaces.ifaddresses(interface)[2][0]['addr'] != '':
 			collector[1] = netifaces.ifaddresses(interface)[2][0]['addr']
@@ -85,6 +85,7 @@ def getInfo():
 		collector[3] = LOCATION
 		# save the collector into it
 		identifiers[collector[0]] = collector
+		
 		# print(collector)
 	# print(identifiers)
 	return identifiers
@@ -101,19 +102,30 @@ def removeInfo(mac):
 	return urllib.request.urlopen(url).read().decode()
 
 def startClient():
-	# Intial data load
+	# Collect current machine info
 	machineInfo = getMachineInfo()
-	for network_card in machineInfo:
-		setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
+
+	# # submit all valid network connections
+	# for network_card in machineInfo:
+	# 	setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
 	
-	# # get the copy. All this shoudl be
-	# updateTime = getTime()
-	# masterList = getMasterList()
-	
-	# # every minute check the hardware and the timestamp
-	# while True:
-	# 	# sleep and check again later
-	# 	sleep(3)
+	# get the master list. this should show last submitted time 
+	masterList = getMasterList()
+	updateTime = getTime()
+
+	# every minute check the hardware and the timestamp
+	while True:
+		# submit all valid network connections
+		for network_card in machineInfo:
+			print('the entry')
+			print(machineInfo[network_card])
+			print('the master list')
+			print(masterList)
+
+		#	setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
+		
+		# sleep and check again later
+		sleep(3)
 
 	# 	# collect the machine info again and respond to changes
 	# 	machineInfoTemp = getMachineInfo()
