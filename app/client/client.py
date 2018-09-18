@@ -62,13 +62,13 @@ def getInfo():
 	# it is named like this because the os name is nt if it is running a version of windows.
 	for interface in netifaces.interfaces():
 		# make a list of 4 emptystring elements
-		collector = ['']*4
+		collector = {}
 
 		# copy the MAC address into the first slot
-		collector[0] = netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr']
+		collector['MAC'] = netifaces.ifaddresses(interface)[netifaces.AF_LINK][0]['addr']
 		# print(netifaces.ifaddresses(interface))
 		# If the MAC address is blank then move on. MAC is a primary key so is mandatory
-		if collector[0] == '':
+		if collector['MAC'] == '':
 			continue
 		
 		# # collect the IP addresses
@@ -78,13 +78,16 @@ def getInfo():
 		
 		# if there is the ipv4 element and it isn't blank then we overwrite the ipv6 address
 		if 2 in netifaces.ifaddresses(interface) and netifaces.ifaddresses(interface)[2][0]['addr'] != '':
-			collector[1] = netifaces.ifaddresses(interface)[2][0]['addr']
+			collector['IP'] = netifaces.ifaddresses(interface)[2][0]['addr']
 		
 		# save the machine name
-		collector[2] = platform.node()
-		collector[3] = LOCATION
+		collector['name'] = platform.node()
+
+		# Save location
+		collector['location'] = LOCATION
+
 		# save the collector into it
-		identifiers[collector[0]] = collector
+		identifiers[collector['MAC']] = collector
 		
 		# print(collector)
 	# print(identifiers)
