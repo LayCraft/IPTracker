@@ -1,5 +1,6 @@
 # this client checks to see if the current system information is up to date or if there has been a change to the network. If there is a change it will request a fresh copy of the list and submit a change if the machine's information is out-of-date.
-import urllib.request,urllib.parse
+from urllib import request
+from urllib.parse import quote
 import platform
 import os
 import netifaces
@@ -8,7 +9,6 @@ import json
 
 SERVER = "wvca41814"
 # SERVER = "wvca41814"# for local development
-
 PORT = 1337
 # Build once and use many times. Reduces string concat later.
 BASE_URL = "http://%s:%i" % (SERVER, PORT)
@@ -21,12 +21,12 @@ f.close()
 
 def getMasterList():
 	url = "%s/get" % (BASE_URL)
-	return json.loads(urllib.request.urlopen(url).read().decode())
+	return json.loads(request.urlopen(url).read().decode())
 
 def getTime():
 	url = "%s/time" % (BASE_URL)
 	print("Getting server time")
-	return urllib.request.urlopen(url).read().decode()
+	return request.urlopen(url).read().decode()
 
 def getMachineInfo():
 	print("Collecting machine info.")
@@ -82,15 +82,16 @@ def getMachineInfo():
 	return validated
 
 def setInfo(mac, ip, name, location):
-	url = "%s/set/%s/%s/%s/%s" % (BASE_URL, mac, ip, name, location) 
+	url = "%s/set/%s/%s/%s/%s" % (BASE_URL, quote(mac), quote(ip), quote(name), quote(location)) 
+	print(url)
 	# read from the url to submit the data and decode its contents because the contents is a list of all devices.
 	print("Setting info on server")
-	return urllib.request.urlopen(url).read().decode()
+	return request.urlopen(url).read().decode()
 
 def removeInfo(mac):
 	url = "%s/remove/%s" % (BASE_URL, mac)
 	print("Removing information")
-	return urllib.request.urlopen(url).read().decode()
+	return request.urlopen(url).read().decode()
 
 def startClient():
 	# Collect current machine info
@@ -105,9 +106,9 @@ def startClient():
 	# if machineInfo['54:e1:ad:b1:e5:bb'] == masterList['54:e1:ad:b1:e5:bb']:
 	# 	print("Woop!")
 
-	# # submit all valid network connections
-	# for network_card in machineInfo:
-	# 	setInfo(machineInfo[network_card][0], machineInfo[network_card][1], machineInfo[network_card][2], machineInfo[network_card][3])
+	# submit all valid network connections
+	for network_card in machineInfo:
+		setInfo(machineInfo[network_card]['MAC'], machineInfo[network_card]['IP'], machineInfo[network_card]['name'], machineInfo[network_card]['location'])
 	
 
 
