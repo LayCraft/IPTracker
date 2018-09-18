@@ -30,34 +30,10 @@ def getTime():
 def getMachineInfo():
 	print("Collecting machine info.")
 	# determine OS
-	unvalidated = getInfo()
-	validated = {}
-	# check each card for valid info and if they are valid add them to the validated list
-	for network_card in unvalidated:
-		# check that the entry has all neccesary keys
-		if 'MAC' not in unvalidated[network_card].keys() or 'IP' not in unvalidated[network_card].keys() or 'name' not in unvalidated[network_card].keys() or 'location' not in unvalidated[network_card].keys():
-			# missing information
-			continue
-		elif '127.0.0.1' in unvalidated[network_card]['IP']:
-			# localhost for ipv4
-			continue
-		elif '::1' == unvalidated[network_card]['IP']:
-			# localhost for ipv6
-			continue
-		elif '00:00:00:00:00:00' == unvalidated[network_card]['MAC']:
-			# blank MAC address
-			continue
-		elif unvalidated[network_card]['IP'][:7] != '10.168.':
-			# ip is not in the company subnet as ipv4
-			continue
-		else:
-			validated[network_card] = unvalidated[network_card]
-	return validated
+	unvalidated = {} # A place to put uncertain results
+	validated = {} # A place to put clean retunable results
 
-def getInfo():
-	# this is done like this so that we can split out into multiple getinfo varieties depending on context or OS.
-	identifiers = {}
-	# it is named like this because the os name is nt if it is running a version of windows.
+		# it is named like this because the os name is nt if it is running a version of windows.
 	for interface in netifaces.interfaces():
 		collector = {}
 		# Save the MAC address if it exists
@@ -80,8 +56,29 @@ def getInfo():
 		collector['location'] = LOCATION
 
 		# save the collector into it
-		identifiers[collector['MAC']] = collector
-	return identifiers
+		unvalidated[collector['MAC']] = collector
+	# print(unvalidated)
+
+	# check each card for valid info and if they are valid add them to the validated list
+	for network_card in unvalidated:
+		# check that the entry has all neccesary keys
+		if 'MAC' not in unvalidated[network_card].keys() or 'IP' not in unvalidated[network_card].keys() or 'name' not in unvalidated[network_card].keys() or 'location' not in unvalidated[network_card].keys():
+			# we have discovered that the entry has missing information
+			continue
+		elif '127.0.0.1' in unvalidated[network_card]['IP'] or '::1' == unvalidated[network_card]['IP']:
+			# we have discovered that this is localhost for ipv4 or ipv6. We don't need these
+			continue
+		elif '00:00:00:00:00:00' == unvalidated[network_card]['MAC']:
+			# blank MAC address. This is useless.
+			continue
+		elif unvalidated[network_card]['IP'][:7] != '10.168.':
+			# if the IP is not in the company subnet we can't use it. (maybe it is a virtual network card or something.)
+			continue
+		else:
+			#if it gets this far it is valid
+			validated[network_card] = unvalidated[network_card]
+	# print(validated)
+	return validated
 
 def setInfo(mac, ip, name, location):
 	url = "%s/set/%s/%s/%s/%s" % (BASE_URL, mac, ip, name, location) 
