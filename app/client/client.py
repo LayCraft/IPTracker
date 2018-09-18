@@ -4,6 +4,7 @@ import platform
 import os
 import netifaces
 from time import sleep
+import re
 
 SERVER = "wvca41814"
 # SERVER = "wvca41814"# for local development
@@ -45,10 +46,15 @@ def getMachineInfo():
 		elif '00:00:00:00:00:00' == unvalidated[network_interface][0]:
 			# blank MAC address
 			continue
+		elif unvalidated[network_interface][1][:7] != '10.168.':
+			# not in the company subnet and must be ipv4
+			print('not in our subnet: '+unvalidated[network_interface][1])
+			continue
 		else:
 			validated[network_interface] = unvalidated[network_interface] 
 
 	# print(os.name) # should always return "nt" or "posix"
+	print(validated)
 	return validated
 
 def getInfo():
