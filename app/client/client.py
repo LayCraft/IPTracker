@@ -99,8 +99,8 @@ def startClient():
 	masterList = getMasterList()
 	updateTime = getTime()
 
-	print(machineInfo['54:e1:ad:b1:e5:bb'])
-	print(masterList)
+	# print(machineInfo['54:e1:ad:b1:e5:bb'])
+	# print(masterList['54:e1:ad:b1:e5:bb'])
 
 	# if machineInfo['54:e1:ad:b1:e5:bb'] == masterList['54:e1:ad:b1:e5:bb']:
 	# 	print("Woop!")
