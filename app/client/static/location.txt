@@ -1,5 +1,7 @@
-Curtis'%20Desk
+Curtis' Desk
 
 This file only has the first line read and it is the location of the computer the client is being run. It has to be URL encoded for now. 
 So spaces should be replaced with %20. Here is a reference of other characters for you.
+
+TODO: update this
 https://www.w3schools.com/tags/ref_urlencode.asp

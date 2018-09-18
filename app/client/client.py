@@ -15,7 +15,8 @@ BASE_URL = "http://%s:%i" % (SERVER, PORT)
 
 # get the machine's location for use from the static file this stays constant until the script is restarted
 f = open('{0}{1}static{1}location.txt'.format(os.path.dirname(os.path.realpath(__file__)), os.path.sep), 'r')
-LOCATION = f.readline()
+LOCATION = f.readline().strip() 
+print(LOCATION)
 f.close()
 
 def getMasterList():
